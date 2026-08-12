@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14100F"/>
+      <stop offset="1" stop-color="#1E1817"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <rect x="0" y="0" width="1200" height="6" fill="#E53935"/>
+
+  <rect x="72" y="66" width="56" height="56" rx="14" fill="#E53935"/>
+  <g transform="translate(82,76) scale(1.5)" fill="none" stroke="#fff"
+     stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2c3 2.5 4.5 6 4.5 10L12 17l-4.5-5C7.5 8 9 4.5 12 2z"/>
+    <path d="M7.5 12 5 15l2 .5.5 2 2.5-2.5"/>
+  </g>
+  <text x="148" y="104" font-family="DejaVu Sans" font-size="40"
+        font-weight="bold" letter-spacing="-1" fill="#EFE5E1">Red Rocket</text>
+
+  <text x="72" y="300" font-family="DejaVu Sans" font-size="68"
+        font-weight="bold" letter-spacing="-2" fill="#EFE5E1">When the alert comes,</text>
+  <text x="72" y="384" font-family="DejaVu Sans" font-size="68"
+        font-weight="bold" letter-spacing="-2" fill="#EFE5E1">your people already know.</text>
+
+  <rect x="72" y="478" width="120" height="3" fill="#E53935"/>
+
+  <text x="72" y="540" font-family="DejaVu Sans Mono" font-size="21"
+        letter-spacing="1" fill="#A08D88">Android 8.0+  ·  AGPL-3.0  ·  no accounts  ·  no servers</text>
+  <g transform="translate(904,506)">
+    <rect x="0"   y="0" width="42" height="42" rx="10" fill="#6ECB9B"/>
+    <rect x="58"  y="0" width="42" height="42" rx="10" fill="#E0A93C"/>
+    <rect x="116" y="0" width="42" height="42" rx="10" fill="#E53935"/>
+    <text x="21"  y="29" font-family="DejaVu Sans Mono" font-size="22" font-weight="bold" fill="#14100F" text-anchor="middle">1</text>
+    <text x="79"  y="29" font-family="DejaVu Sans Mono" font-size="22" font-weight="bold" fill="#14100F" text-anchor="middle">2</text>
+    <text x="137" y="29" font-family="DejaVu Sans Mono" font-size="22" font-weight="bold" fill="#14100F" text-anchor="middle">3</text>
+    <text x="176" y="28" font-family="DejaVu Sans Mono" font-size="15" fill="#A08D88">reply</text>
+  </g>
+</svg>

@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Red Rocket: emergency alerts that text your people</title>
+<meta name="description" content="Red Rocket watches for emergency alerts on your Android phone. When one matches a scenario you set up, it texts the people you picked and tracks who answers. No accounts, no servers, AGPL-3.0.">
+<link rel="canonical" href="https://redrocket.fysh.site/">
+<meta name="theme-color" content="#E53935" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#D32F2F" media="(prefers-color-scheme: light)">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Red Rocket">
+<meta property="og:url" content="https://redrocket.fysh.site/">
+<meta property="og:title" content="Red Rocket: emergency alerts that text your people">
+<meta property="og:description" content="Red Rocket watches for emergency alerts on your Android phone. When one matches a scenario you set up, it texts the people you picked and tracks who answers. No accounts, no servers, AGPL-3.0.">
+<meta property="og:image" content="https://redrocket.fysh.site/og-card.png?v=20260812">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Red Rocket. When the alert comes, your people already know. Android 8.0 or newer, AGPL-3.0, no accounts, no servers. Three coloured reply codes: 1, 2 and 3.">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Red Rocket: emergency alerts that text your people">
+<meta name="twitter:description" content="Red Rocket watches for emergency alerts on your Android phone. When one matches a scenario you set up, it texts the people you picked and tracks who answers. No accounts, no servers, AGPL-3.0.">
+<meta name="twitter:image" content="https://redrocket.fysh.site/og-card.png?v=20260812">
+<meta name="twitter:image:alt" content="Red Rocket. When the alert comes, your people already know. Android 8.0 or newer, AGPL-3.0, no accounts, no servers. Three coloured reply codes: 1, 2 and 3.">
+</head>
+<body>
+<style>
+  :root {
+    --ground: #FBF6F4;
+    --surface: #FFFFFF;
+    --sunk: #F3EBE8;
+    --line: #E6D8D3;
+    --line-strong: #D3BEB7;
+    --ink: #1B1412;
+    --ink-soft: #4A3A36;
+    --muted: #6E5C57;
+    --rocket: #D32F2F;
+    --rocket-ink: #FFFFFF;
+    --safe: #2E7D5B;
+    --watch: #A8701A;
+    --shadow: 0 1px 2px rgba(27,20,18,.06), 0 8px 24px -12px rgba(27,20,18,.18);
+
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+    --step: clamp(1rem, .92rem + .4vw, 1.075rem);
+    --measure: 62ch;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #14100F;
+      --surface: #1E1817;
+      --sunk: #191413;
+      --line: #2F2523;
+      --line-strong: #453633;
+      --ink: #EFE5E1;
+      --ink-soft: #CDBDB8;
+      --muted: #A08D88;
+      --rocket: #E53935;
+      --rocket-ink: #14100F;
+      --safe: #6ECB9B;
+      --watch: #E0A93C;
+      --shadow: 0 1px 2px rgba(0,0,0,.5), 0 12px 32px -16px rgba(0,0,0,.7);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #14100F;
+    --surface: #1E1817;
+    --sunk: #191413;
+    --line: #2F2523;
+    --line-strong: #453633;
+    --ink: #EFE5E1;
+    --ink-soft: #CDBDB8;
+    --muted: #A08D88;
+    --rocket: #E53935;
+    --rocket-ink: #14100F;
+    --safe: #6ECB9B;
+    --watch: #E0A93C;
+    --shadow: 0 1px 2px rgba(0,0,0,.5), 0 12px 32px -16px rgba(0,0,0,.7);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: var(--step);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+
+  a { color: inherit; }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--rocket);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: .72rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 14px;
+  }
+
+  h1, h2, h3 { text-wrap: balance; margin: 0; }
+  h1 {
+    font-size: clamp(2.6rem, 1.6rem + 4.2vw, 4.6rem);
+    line-height: .96;
+    letter-spacing: -.035em;
+    font-weight: 800;
+  }
+  h2 {
+    font-size: clamp(1.6rem, 1.25rem + 1.5vw, 2.3rem);
+    line-height: 1.1;
+    letter-spacing: -.025em;
+    font-weight: 800;
+  }
+  h3 { font-size: 1.02rem; letter-spacing: -.01em; font-weight: 700; }
+
+  p { margin: 0 0 1em; max-width: var(--measure); }
+  p:last-child { margin-bottom: 0; }
+  .lede { font-size: clamp(1.1rem, 1rem + .5vw, 1.32rem); color: var(--ink-soft); line-height: 1.5; }
+
+  /* ---------- masthead ---------- */
+
+  header.top {
+    border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--ground) 88%, transparent);
+    backdrop-filter: blur(8px);
+  }
+  .top-inner { display: flex; align-items: center; gap: 14px; height: 60px; }
+  .mark {
+    width: 26px; height: 26px; border-radius: 6px;
+    background: var(--rocket); flex: none;
+    display: grid; place-items: center;
+  }
+  .mark svg { width: 15px; height: 15px; display: block; }
+  .wordmark { font-weight: 800; letter-spacing: -.02em; }
+  .top-spacer { flex: 1; }
+  .top-meta { font-family: var(--mono); font-size: .78rem; color: var(--muted); }
+
+  /* ---------- the two-column rhythm ---------- */
+
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 390px;
+    gap: 56px;
+    align-items: start;
+    padding: 68px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .row.hero { padding-top: 76px; padding-bottom: 76px; }
+  .row > .text > * + * { margin-top: 18px; }
+
+  /* Every other row puts the card on the left, so the eye zig-zags down the page
+     instead of tracking one rigid column. Source order stays text-then-card, which
+     is also the reading order the single-column layout falls back to. */
+  .row.flip { grid-template-columns: 390px minmax(0, 1fr); }
+  .row.flip > .text { grid-column: 2; grid-row: 1; }
+  .row.flip > aside { grid-column: 1; grid-row: 1; }
+
+  @media (max-width: 940px) {
+    .row, .row.flip { grid-template-columns: minmax(0, 1fr); gap: 34px; padding: 48px 0; }
+    .row.flip > .text, .row.flip > aside { grid-column: auto; grid-row: auto; }
+  }
+
+  /* ---------- cards ---------- */
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .card-head {
+    padding: 18px 20px 16px;
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  .card-head .tag {
+    margin-left: auto;
+    font-family: var(--mono); font-size: .72rem;
+    color: var(--muted); letter-spacing: .06em;
+  }
+  .card-body { padding: 18px 20px 20px; }
+  .card.primary { border-color: var(--line-strong); }
+  .card.primary .rule { height: 3px; background: var(--rocket); }
+
+  .spec { border-collapse: collapse; width: 100%; font-size: .88rem; }
+  .spec th, .spec td { text-align: left; padding: 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .spec tr:last-child th, .spec tr:last-child td { border-bottom: 0; }
+  .spec th { font-weight: 500; color: var(--muted); width: 44%; }
+  .spec td { font-family: var(--mono); font-size: .82rem; font-variant-numeric: tabular-nums; color: var(--ink); }
+  .spec td.wrapall { word-break: break-all; line-height: 1.45; }
+
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%;
+    background: var(--rocket); color: var(--rocket-ink);
+    font: 700 1rem/1 var(--sans);
+    letter-spacing: -.01em;
+    border: 0; border-radius: 8px;
+    padding: 15px 18px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: filter .15s ease, transform .15s ease;
+  }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: translateY(1px); }
+  .btn svg { width: 17px; height: 17px; }
+  .btn-sub {
+    margin-top: 10px;
+    font-family: var(--mono); font-size: .73rem; color: var(--muted);
+    text-align: center; line-height: 1.5;
+  }
+
+  .ghost {
+    display: block; text-align: center;
+    padding: 11px 14px; border: 1px solid var(--line-strong); border-radius: 8px;
+    font-weight: 600; font-size: .9rem; text-decoration: none;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .ghost:hover { border-color: var(--rocket); background: var(--sunk); }
+
+  /* ---------- gate list: a real sequence, so it is numbered ---------- */
+
+  .gate { list-style: none; margin: 0; padding: 0; counter-reset: gate; }
+  .gate li {
+    counter-increment: gate;
+    display: grid; grid-template-columns: 26px 1fr; gap: 12px;
+    padding: 11px 0; border-bottom: 1px solid var(--line);
+    font-size: .88rem; line-height: 1.5;
+  }
+  .gate li:last-child { border-bottom: 0; }
+  .gate li::before {
+    content: counter(gate);
+    font-family: var(--mono); font-size: .74rem; font-weight: 600;
+    color: var(--muted);
+    padding-top: 2px;
+  }
+  .gate li.stop::before { color: var(--rocket); }
+
+  /* ---------- reply codes ---------- */
+
+  .codes { display: flex; flex-direction: column; gap: 10px; }
+  .code {
+    display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: center;
+    padding: 12px; border: 1px solid var(--line); border-radius: 8px;
+    background: var(--sunk);
+  }
+  .code b {
+    grid-row: span 2;
+    width: 34px; height: 34px; border-radius: 8px;
+    display: grid; place-items: center;
+    font-family: var(--mono); font-size: 1rem;
+    color: var(--rocket-ink);
+  }
+  .code.c1 b { background: var(--safe); }
+  .code.c2 b { background: var(--watch); }
+  .code.c3 b { background: var(--rocket); }
+  .code span { font-size: .88rem; line-height: 1.45; }
+  .code em { font-style: normal; color: var(--muted); }
+
+  /* ---------- stat card ---------- */
+
+  .stats { display: grid; grid-template-columns: 1fr 1fr; }
+  .stat { padding: 18px 20px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat:nth-child(2n) { border-right: 0; }
+  .stat:nth-last-child(-n+2) { border-bottom: 0; }
+  .stat .n { font-family: var(--mono); font-size: 1.7rem; font-weight: 600; letter-spacing: -.03em; display: block; font-variant-numeric: tabular-nums; }
+  .stat .l { font-size: .78rem; color: var(--muted); line-height: 1.4; display: block; margin-top: 2px; }
+
+  /* ---------- alert simulation ---------- */
+
+  .sim {
+    background: var(--sunk);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px;
+    font-family: var(--mono);
+    font-size: .8rem;
+    line-height: 1.55;
+    max-width: var(--measure);
+  }
+  .sim-line { display: flex; gap: 10px; padding: 7px 0; opacity: 0; transform: translateY(4px); }
+  .sim-line .who { color: var(--muted); flex: none; width: 92px; }
+  .sim-line .what { color: var(--ink-soft); }
+  .sim-line.alert .what { color: var(--rocket); font-weight: 600; }
+  .sim-line.reply .what { color: var(--safe); }
+  .sim.play .sim-line { animation: rise .45s ease forwards; }
+  .sim.play .sim-line:nth-child(1) { animation-delay: .10s; }
+  .sim.play .sim-line:nth-child(2) { animation-delay: .70s; }
+  .sim.play .sim-line:nth-child(3) { animation-delay: 1.15s; }
+  .sim.play .sim-line:nth-child(4) { animation-delay: 1.60s; }
+  .sim.play .sim-line:nth-child(5) { animation-delay: 2.20s; }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sim-line { opacity: 1; transform: none; }
+    .sim.play .sim-line { animation: none; }
+    .btn { transition: none; }
+  }
+
+  /* ---------- misc ---------- */
+
+  .note {
+    border-left: 2px solid var(--line-strong);
+    padding-left: 16px;
+    color: var(--muted);
+    font-size: .92rem;
+    max-width: var(--measure);
+  }
+  .note strong { color: var(--ink-soft); }
+
+  .text p a { text-decoration: none; border-bottom: 1px solid var(--line-strong); }
+  .text p a:hover { border-bottom-color: var(--rocket); }
+
+  .perm { border-collapse: collapse; width: 100%; font-size: .85rem; }
+  .perm td { padding: 10px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .perm tr:last-child td { border-bottom: 0; }
+  .perm td.k { font-family: var(--mono); font-size: .74rem; padding-right: 14px; white-space: nowrap; color: var(--ink); }
+  .perm td.v { color: var(--muted); line-height: 1.45; }
+
+  .steps { margin: 0; padding-left: 1.1em; font-size: .88rem; line-height: 1.6; }
+  .steps li { margin-bottom: 8px; }
+  .steps li:last-child { margin-bottom: 0; }
+  .steps code { font-family: var(--mono); font-size: .8rem; background: var(--sunk); padding: 1px 5px; border-radius: 4px; }
+
+  footer {
+    padding: 44px 0 64px;
+    color: var(--muted);
+    font-size: .88rem;
+  }
+  .foot-grid { display: flex; flex-wrap: wrap; gap: 28px 40px; align-items: baseline; }
+  .foot-grid a { text-decoration: none; border-bottom: 1px solid var(--line-strong); }
+  .foot-grid a:hover { border-bottom-color: var(--rocket); }
+  .foot-note { margin-top: 28px; font-family: var(--mono); font-size: .74rem; line-height: 1.7; }
+</style>
+
+<header class="top">
+  <div class="wrap top-inner">
+    <span class="mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2c3 2.5 4.5 6 4.5 10L12 17l-4.5-5C7.5 8 9 4.5 12 2z"/>
+        <path d="M7.5 12 5 15l2 .5.5 2 2.5-2.5"/>
+      </svg>
+    </span>
+    <span class="wordmark">Red Rocket</span>
+    <span class="top-spacer"></span>
+    <span class="top-meta">v2.2.0</span>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section class="row hero">
+      <div class="text">
+        <p class="eyebrow">Android 8.0 and up &middot; AGPL-3.0</p>
+        <h1>When the alert comes, your people already know.</h1>
+        <p class="lede">Red Rocket watches for emergency alerts on your phone. When one matches a scenario you set up, it texts the people you picked and tracks who answers.</p>
+        <p>You're not going to write a message during an earthquake. You write it now, once, while nothing's happening. Red Rocket sends it, whether or not your phone's in your hand.</p>
+
+        <div class="sim" id="sim" role="img" aria-label="A worked example: an emergency alert arrives, Red Rocket matches it to a scenario, sends to five contacts, and receives replies.">
+          <div class="sim-line alert"><span class="who">03:14</span><span class="what">CMAS &middot; Tsunami warning &middot; move to high ground</span></div>
+          <div class="sim-line"><span class="who">match</span><span class="what">scenario "Coastal" &mdash; keyword: tsunami</span></div>
+          <div class="sim-line"><span class="who">sending</span><span class="what">family (3) &middot; neighbours (2)</span></div>
+          <div class="sim-line reply"><span class="who">03:14</span><span class="what">Mum &rarr; 1 &middot; safe</span></div>
+          <div class="sim-line reply"><span class="who">03:15</span><span class="what">Dad &rarr; 2 &middot; safe, wants updates</span></div>
+        </div>
+      </div>
+
+      <aside class="card primary">
+        <div class="rule"></div>
+        <div class="card-head">
+          <h3>Download</h3>
+          <span class="tag">1 June 2026</span>
+        </div>
+        <div class="card-body">
+          <a class="btn" href="https://github.com/Fysh-ball/RedRocket/releases/download/v2.2.0/Red.Rocket.v2.2.0.apk">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 20h16"/>
+            </svg>
+            Red Rocket 2.2.0
+          </a>
+          <p class="btn-sub">APK &middot; 2.4&nbsp;MB &middot; sideload</p>
+
+          <table class="spec" style="margin-top:18px">
+            <tbody>
+              <tr><th scope="row">Requires</th><td>Android 8.0+</td></tr>
+              <tr><th scope="row">Built against</th><td>Android 15</td></tr>
+              <tr><th scope="row">Size</th><td>2,399,694 bytes</td></tr>
+              <tr><th scope="row">Licence</th><td>AGPL-3.0</td></tr>
+              <tr><th scope="row">SHA-256</th><td class="wrapall">f4215a9c2c499d5bbb1cc95276a9d99eb3bf0f26943381c7aff57e353a5f1e68</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </aside>
+    </section>
+
+    <section class="row flip">
+      <div class="text">
+        <p class="eyebrow">Detection</p>
+        <h2>It runs eight checks before it sends anything.</h2>
+        <p>The mistake that costs you isn't a missed alert. It's a false one: five people getting a tsunami text because a news app used the word. So firing is deliberately hard.</p>
+        <p>Test broadcasts are a hard stop, not a score. Block phrases beat keywords, so "this is a test" cancels the match outright. And it weighs where the alert came from, because a system cell broadcast isn't a push from some news app.</p>
+        <p>AMBER alerts pass through like anything else. Want one to trigger a scenario? Add it as a keyword.</p>
+      </div>
+
+      <aside class="card">
+        <div class="card-head"><h3>The gate</h3><span class="tag">in order</span></div>
+        <div class="card-body">
+          <ol class="gate">
+            <li class="stop">Hard block on test and drill broadcasts</li>
+            <li>Trust level of the source app</li>
+            <li>Activation keywords for the scenario</li>
+            <li class="stop">Block phrases, which cancel a match</li>
+            <li>Multilingual phrase matching</li>
+            <li>Disaster category presets</li>
+            <li>Region and dial code</li>
+            <li>Scenario armed, and not already fired</li>
+          </ol>
+        </div>
+      </aside>
+    </section>
+
+    <section class="row">
+      <div class="text">
+        <p class="eyebrow">Contacts</p>
+        <h2>Different people, different message, one trigger.</h2>
+        <p>Each scenario holds groups, and each group has its own message. Family gets the one about the spare key. Coworkers get the one about the shift. Both go out at once, off the same alert.</p>
+        <p>Messages go out in parallel. If the network starts failing it drops to sequential, then to a retry mode that keeps going until everything lands. You can tell it to never give up.</p>
+        <p>Then it listens. Contacts reply with one digit, and the dashboard shows who's answered and who hasn't.</p>
+      </div>
+
+      <aside class="card">
+        <div class="card-head"><h3>What a reply means</h3><span class="tag">SMS</span></div>
+        <div class="card-body">
+          <div class="codes">
+            <div class="code c1"><b>1</b><span>Safe<br><em>No further action</em></span></div>
+            <div class="code c2"><b>2</b><span>Safe, wants updates<br><em>Stays on the list</em></span></div>
+            <div class="code c3"><b>3</b><span>Emergency<br><em>Surfaced at the top of the dashboard</em></span></div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="row flip">
+      <div class="text">
+        <p class="eyebrow">Coverage</p>
+        <h2>It doesn't assume you're at home.</h2>
+        <p>Alerts aren't worded the same everywhere, so the presets cover 14 disaster categories with keywords in 22 languages across 35 countries. Tap one to add the whole category, tap again to drop it.</p>
+        <p>It reads your region and dial code from the device. If you've travelled, or your SIM says one country and you're in another, set it yourself.</p>
+      </div>
+
+      <aside class="card">
+        <div class="card-head"><h3>Presets</h3><span class="tag">built in</span></div>
+        <div class="stats">
+          <div class="stat"><span class="n">14</span><span class="l">disaster categories</span></div>
+          <div class="stat"><span class="n">22</span><span class="l">languages</span></div>
+          <div class="stat"><span class="n">35</span><span class="l">countries</span></div>
+          <div class="stat"><span class="n">0</span><span class="l">accounts to make</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="row">
+      <div class="text">
+        <p class="eyebrow">Permissions</p>
+        <h2>What it asks your phone for, and why.</h2>
+        <p>An app that texts people while you're not looking should be able to justify every permission it asks for. Here's the list, straight from the manifest in the APK above.</p>
+        <p>Two are optional and it works fine without them. Contacts just saves you typing numbers in by hand. Location only does anything if you turn on enrichment, and that's off until you do.</p>
+      </div>
+
+      <aside class="card">
+        <div class="card-head"><h3>Declared</h3><span class="tag">manifest</span></div>
+        <div class="card-body">
+          <table class="perm">
+            <tbody>
+              <tr><td class="k">SEND_SMS</td><td class="v">Send the message. The whole point.</td></tr>
+              <tr><td class="k">RECEIVE_SMS</td><td class="v">Read the one-digit replies for the dashboard.</td></tr>
+              <tr><td class="k">POST_NOTIFICATIONS</td><td class="v">The alert, the replies, the sending status.</td></tr>
+              <tr><td class="k">FOREGROUND_SERVICE</td><td class="v">Stay alive so Android does not kill the watcher.</td></tr>
+              <tr><td class="k">RECEIVE_BOOT_COMPLETED</td><td class="v">Start watching again after a reboot.</td></tr>
+              <tr><td class="k">WAKE_LOCK</td><td class="v">Stay awake long enough to finish sending.</td></tr>
+              <tr><td class="k">IGNORE_BATTERY_OPT</td><td class="v">Survive doze. Asked once, during setup.</td></tr>
+              <tr><td class="k">INTERNET</td><td class="v">Version check, and enrichment if you enable it.</td></tr>
+              <tr><td class="k">READ_CONTACTS</td><td class="v">Optional. Pick contacts instead of typing numbers.</td></tr>
+              <tr><td class="k">COARSE_LOCATION</td><td class="v">Optional, off by default. Alert enrichment only.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </aside>
+    </section>
+
+    <section class="row flip">
+      <div class="text">
+        <p class="eyebrow">Data</p>
+        <h2>What leaves your phone.</h2>
+        <p>No account, no server, no analytics. Your contacts, scenarios and messages sit on the device and don't go anywhere.</p>
+        <p>Two things do go out. One's a version check that says nothing about you. The other's optional, and worth explaining.</p>
+        <p><a href="https://event-horizon.fysh.site">Event Horizon Web</a> is a separate app that maps what's happening and where. Red Rocket doesn't need it and works fine on its own. Turn on enrichment and the two split the job: Red Rocket tells your people, Event Horizon tells you what you're looking at.</p>
+        <p class="note"><strong>Enrichment is off until you turn it on.</strong> With it on, an alert makes the app read your rough location and ask Event Horizon what's happening within 15&nbsp;km. That request carries the coordinates and nothing else: no name, no ID, no contacts, no alert text. The answer isn't stored. Leave it off and no location ever leaves your phone.</p>
+      </div>
+
+      <aside class="card">
+        <div class="card-head"><h3>Outbound</h3><span class="tag">all of it</span></div>
+        <div class="card-body">
+          <table class="spec">
+            <tbody>
+              <tr><th scope="row">Version check</th><td>on launch</td></tr>
+              <tr><th scope="row">&nbsp;&nbsp;sends</th><td>nothing about you</td></tr>
+              <tr><th scope="row">Enrichment</th><td>opt in, default off</td></tr>
+              <tr><th scope="row">&nbsp;&nbsp;goes to</th><td>Event Horizon</td></tr>
+              <tr><th scope="row">&nbsp;&nbsp;sends</th><td>lat, lon, 15&nbsp;km</td></tr>
+              <tr><th scope="row">Everything else</th><td>stays local</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </aside>
+    </section>
+
+    <section class="row">
+      <div class="text">
+        <p class="eyebrow">Updates</p>
+        <h2>Red Rocket won't nag you.</h2>
+        <p>It notifies you for three things: a live alert, a reply, and sending status. Update notices aren't on that list on purpose. A notification you learn to swipe away is one you'll swipe away on the night it matters.</p>
+        <p>It checks quietly when you next open it and shows a small banner if there's a newer build. Want it to update itself like a store app? Use Obtainium.</p>
+      </div>
+
+      <aside class="card">
+        <div class="card-head"><h3>Auto-update with Obtainium</h3><span class="tag">optional</span></div>
+        <div class="card-body">
+          <ol class="steps">
+            <li>Install <a href="https://github.com/ImranR98/Obtainium">Obtainium</a>. Free, open source.</li>
+            <li>Add <code>github.com/Fysh-ball/RedRocket</code> as an app source.</li>
+            <li>It watches for new releases, downloads and installs. Red Rocket needs no extra permission.</li>
+          </ol>
+          <a class="ghost" style="margin-top:16px" href="https://github.com/Fysh-ball/RedRocket/releases/download/v2.2.0/Red.Rocket.v2.2.0.apk">Direct APK link</a>
+        </div>
+      </aside>
+    </section>
+
+  </div>
+
+  <div class="wrap">
+    <footer>
+      <div class="foot-grid">
+        <span><strong style="color:var(--ink)">Red Rocket 2.2.0</strong> &middot; 1 June 2026</span>
+        <a href="/privacy">Privacy policy</a>
+        <a href="/permissions">Permissions in full</a>
+        <a href="https://github.com/Fysh-ball/RedRocket">Source on GitHub</a>
+        <a href="https://ko-fi.com/C0C71L2ELD">Ko-fi</a>
+      </div>
+      <p class="foot-note">
+        Licensed AGPL-3.0, source public. Sideloading means trusting whoever built it, so check the hash:<br>
+        <code>sha256sum Red.Rocket.v2.2.0.apk</code><br><br>
+        Red Rocket isn&rsquo;t a replacement for official emergency services or your country&rsquo;s alert system.
+      </p>
+    </footer>
+  </div>
+</main>
+
+<script>
+  // One pass on load, and only when the reader has not asked for stillness.
+  (function () {
+    var sim = document.getElementById('sim');
+    if (!sim) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    requestAnimationFrame(function () { sim.classList.add('play'); });
+  })();
+</script>
+
+</body>
+</html>
